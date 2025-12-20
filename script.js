@@ -50,7 +50,7 @@ const playersModule = (() => {
 
 const gamestateModule = (() => {
   const player1 = () => playersModule.getPlayer1();
-  const player2 = () => playerModule.getPlayer2();
+  const player2 = () => playersModule.getPlayer2();
 
   return { player1, player2 };
 })();
