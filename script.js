@@ -14,7 +14,9 @@ gameboardModule = (() => {
   // methods
 
   const getBoard = () => gameboard;
-  return { getBoard };
+
+  const updateBoard = (spot, mark) => (gameboard[spot] = mark);
+  return { gameboard, getBoard, updateBoard };
 })();
 
 // players module
@@ -52,5 +54,13 @@ const gamestateModule = (() => {
   const player1 = () => playersModule.getPlayer1();
   const player2 = () => playersModule.getPlayer2();
 
+  // placeMark()
+  // accepts player and gameboard position to place the players mark
+  // 1.get player object
+  // 2.get mark from player object
+  // 3.get players board position to place mark
+  // 4.get gameboard object
+  // 5.construct new value for gameboard object
+  // 6. RETUTN: update to specified gameboard property value
   return { player1, player2 };
 })();
