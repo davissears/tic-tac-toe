@@ -1,6 +1,6 @@
 // gameboard module
 gameboardModule = (() => {
-  let gameboard = {
+  const gameboard = {
     a1: "",
     a2: "",
     a3: "",
@@ -12,7 +12,6 @@ gameboardModule = (() => {
     c3: "",
   };
   // methods
-  // placeMark()
 
   const getBoard = () => gameboard;
   return { getBoard };
@@ -27,7 +26,9 @@ const playersModule = (() => {
   const createPlayer = (playerNameString) => {
     // increments newPlayer id
     playerCount++;
-
+    if (playerCount > 2) {
+      throw new Error("this is a two player Game");
+    }
     //  defines newPlayer object properties
     const id = playerCount;
     const mark = playerCount === 1 ? "X" : "O";
@@ -47,5 +48,9 @@ const playersModule = (() => {
   return { createPlayer, getPlayers, getPlayer1, getPlayer2 };
 })();
 
-console.log(playersModule.createPlayer("felix"));
-console.log(playersModule.createPlayer("jane"));
+const gamestateModule = (() => {
+  const player1 = () => playersModule.getPlayer1();
+  const player2 = () => playerModule.getPlayer2();
+
+  return { player1, player2 };
+})();
