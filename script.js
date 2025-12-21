@@ -16,7 +16,8 @@ gameboardModule = (() => {
   const getBoard = () => gameboard;
 
   function updateBoard(spot, mark) {
-    return (gameboard[spot] = mark);
+    gameboard[spot] = mark;
+    return true;
   }
   return { getBoard, updateBoard };
 })();
@@ -44,7 +45,6 @@ const playersModule = (() => {
     return newPlayer;
   };
 
-  // FIX: Use a function to get the current state of players
   const getPlayers = () => players;
   const getPlayer1 = () => players[0];
   const getPlayer2 = () => players[1];
@@ -52,7 +52,7 @@ const playersModule = (() => {
   return { createPlayer, getPlayers, getPlayer1, getPlayer2 };
 })();
 
-const _gamestateModule = (() => {
+const gamestateModule = (() => {
   const player1 = () => playersModule.getPlayer1();
   const player2 = () => playersModule.getPlayer2();
   // const board = () => gamestateModule.getBoard();
