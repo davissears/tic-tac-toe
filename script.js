@@ -57,6 +57,13 @@ const gamestateModule = (() => {
   const player1 = () => playersModule.getPlayer1();
   const player2 = () => playersModule.getPlayer2();
   const board = () => gameboardModule.getBoard();
+  
+  // stores gamestate variable values.
+  let state = {
+    currentPlayer: null,
+    placedMarks: 0,
+    winner: null,
+  };
 
   // methods
   // accepts player and gameboard position to place the players mark
@@ -69,56 +76,86 @@ const gamestateModule = (() => {
     // call example:
     //  gamestateModule.placeMark(gamestateModule.player1(), 'a1');
   };
-  playGame = () => {
-    const winner = null;
-    let placedMarks = 0;
-    let currentPlayer = player1();
 
+  // tracks active player
+  const endTurn = () => {
+    const marksPlaced = Object.values(board()).filter(
+      (mark) => mark !== "",
+    ).length;
+
+    // checks marks on gameboard to determine currentPlayer
+    if (marksPlaced > state.placedMarks) {
+      state.placedMarks = marksPlaced;
+      state.currentPlayer =
+        state.currentPlayer === player1() ? player2() : player1();
+      // TODO remove this console.log
+      console.log(`Turn ended. Next player: ${state.currentPlayer.name}`);
+      // error handling
+    } else {
+      // TODO remove this console log
+      console.warn(`It is still ${state.currentPlayer.name}'s turn.`);
+      throw new Error("No move made yet.");
+    }
+
+    return state.currentPlayer;
+  };
+  
+  // 
+  // 
+  // FIX TODO: isWinning() / gameOver()
+  // isWinning()
+  //  if player meets win conditions: 
+  //    (any of 8 possible win conditions are met)
+  //    {update state
+  //    call gameOver()}
+  //  if draw: 
+  //    (9 total marksPlaced)
+  //    {call GameOver()}
+  // 
+  // gameOver()
+  //  if winner === a player
+  //    (player1 || player2)
+  //    {player[id] wins}
+  //  if winner is null
+  //    (winner === null)
+  //    {draw: the game wins?}
+  //  
+  //  
+  const playGame = () => {
+    state.currentPlayer = player1();
+    state.placedMarks = 0;
+    state.winner = null;
+
+    // TODO remove this console.log
     console.log("Value of board():", board());
 
-    if (!currentPlayer) {
+    if (!state.currentPlayer) {
+      // TODO remove this console log
       console.warn(
         "No players found. Please create players before starting the game.",
       );
       return;
     }
 
-    const countMarks = Object.values(board()).filter(
-      (mark) => mark === currentPlayer.mark,
-    );
-
-    //
-    endTurn = () => {
-      if (countMarks.length > placedMarks) {
-        placedMarks++;
-        currentPlayer = currentPlayer === player1() ? player2() : player1();
-      }
-      return currentPlayer;
-    };
-    return {
-      endTurn,
-      countMarks,
-      currentPlayer,
-      endTurn,
-    };
+    return state;
   };
+
   // TODO remove 'player1' & 'player2' from return statement
-  const currentPlayer = () => playGame().currentPlayer;
   return {
-    currentPlayer,
     player1,
     player2,
     board,
     placeMark,
     playGame,
+    endTurn,
   };
 })();
 
-// FIX THIS: gamestateModule.currentPlayer() is not loging the expected value.
 // tests
-playersModule.createPlayer("dad");
-playersModule.createPlayer("felix");
-gamestateModule.placeMark(gamestateModule.player1(), "a1");
-console.log(gamestateModule.currentPlayer());
-console.log(gamestateModule.playGame().endTurn());
-console.log(gamestateModule.currentPlayer());
+// playersModule.createPlayer("dad");
+// playersModule.createPlayer("felix");
+// gamestateModule.playGame();
+// gamestateModule.placeMark(gamestateModule.player1(), "a1");
+// console.log(gamestateModule.currentPlayer());
+// console.log(gamestateModule.playGame().endTurn());
+// console.log(gamestateModule.currentPlayer());
