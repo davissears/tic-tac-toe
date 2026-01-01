@@ -82,32 +82,40 @@ h6 {
 body {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
-    grid-template-rows: 1fr 4fr;
+    grid-template-rows: 1fr 5fr;
 }
 .openModalContainer {
-    grid-column-start: 1/3;
-    grid-row: 1/2;
+    display: grid;
+    grid-column-start: span 3;
+    grid-row-start: 1;
+}
+
+.addPlayersButton {
+    align-self: center;
+    justify-self: center;
+    width: 50%;
+}
+.boardViewport {
+    grid-column-start: 2/3;
+    grid-row-start: 2;
+    display: grid;
+    align-self: center;
+    justify-content: center;
 }
 .playerOneDisplay {
     grid-column-start: 1 span;
-    grid-row: 2/3;
+    grid-row: 2;
     height: 15vh;
+    align-items: center;
+    justify-content: center;
 }
 .playerTwoDisplay {
     grid-column-start: 3/4;
-    grid-row: 2/3;
+    grid-row: 2;
     height: 15vh;
 }
 
 /*gameboard*/
-.boardViewport {
-    grid-column-start: 2/3;
-    grid-row-start: 2/3;
-    display: grid;
-    height: 50%;
-    align-self: center;
-    justify-content: center;
-}
 .gameboard {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
