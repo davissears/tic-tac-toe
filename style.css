@@ -77,23 +77,43 @@ h6 {
 }
 /* Style **/
 
-.window {
-    display: grid;
+/*add players*/
 
-    height: 100vh;
-    align-self: center;
-    justify-content: center;
+body {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: 1fr 4fr;
 }
-
-.gameboard {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    height: 75vh;
-    align-self: center;
-    justify-content: center;
+.openModalContainer {
+    grid-column-start: 1/3;
+    grid-row: 1/2;
+}
+.playerOneDisplay {
+    grid-column-start: 1 span;
+    grid-row: 2/3;
+    height: 15vh;
+}
+.playerTwoDisplay {
+    grid-column-start: 3/4;
+    grid-row: 2/3;
+    height: 15vh;
 }
 
 /*gameboard*/
+.boardViewport {
+    grid-column-start: 2/3;
+    grid-row-start: 2/3;
+    display: grid;
+    height: 50%;
+    align-self: center;
+    justify-content: center;
+}
+.gameboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-self: center;
+    justify-content: center;
+}
 
 #c1 {
     border-right: 5px black solid;
@@ -146,7 +166,4 @@ h6 {
 .cell {
     height: 25vh;
     width: 25vh;
-
-    /*background-color:;*/
 }
-

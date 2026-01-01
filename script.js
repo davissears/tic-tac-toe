@@ -1,7 +1,7 @@
 // TODO: specify roadmap to progress development
 
 // gameboard module
-gameboardModule = (() => {
+let gameboardModule = (() => {
   const gameboard = {
     a1: "",
     a2: "",
@@ -55,7 +55,7 @@ const playersModule = (() => {
 
   return { createPlayer, getPlayers, getPlayer1, getPlayer2 };
 })();
-
+// gamestate Module
 const gamestateModule = (() => {
   const player1 = () => playersModule.getPlayer1();
   const player2 = () => playersModule.getPlayer2();
@@ -208,48 +208,45 @@ const gamestateModule = (() => {
     isWinning,
     gameOver,
     state,
+    playGame,
   };
 })();
 
-// // tests
-// // create players
-// playersModule.createPlayer("dad");
-// playersModule.createPlayer("felix");
-// // init game
-// gamestateModule.playGame();
-// // round 1
-// gamestateModule.placeMark(gamestateModule.player1(), "a1");
-// gamestateModule.endTurn();
-// gamestateModule.isWinning(gamestateModule.player1());
-// gamestateModule.placeMark(gamestateModule.player2(), "b1");
-// gamestateModule.endTurn();
-// gamestateModule.isWinning(gamestateModule.player2());
-// // round 2
-// gamestateModule.placeMark(gamestateModule.player1(), "a2");
-// gamestateModule.endTurn();
-// gamestateModule.isWinning(gamestateModule.player1());
-// gamestateModule.placeMark(gamestateModule.player2(), "b2");
-// gamestateModule.endTurn();
-// gamestateModule.isWinning(gamestateModule.player2());
-// // round 3
-// gamestateModule.placeMark(gamestateModule.player1(), "a3");
-// gamestateModule.endTurn();
-// gamestateModule.isWinning(gamestateModule.player1());
-// gamestateModule.placeMark(gamestateModule.player2(), "b3");
-// gamestateModule.endTurn();
-// gamestateModule.isWinning(gamestateModule.player2());
-// // round 4
-// gamestateModule.placeMark(gamestateModule.player1(), "c1");
-// gamestateModule.endTurn();
-// gamestateModule.isWinning(gamestateModule.player1());
-// gamestateModule.placeMark(gamestateModule.player2(), "c2");
-// gamestateModule.endTurn();
-// gamestateModule.isWinning(gamestateModule.player2());
-// // round 5
-// gamestateModule.placeMark(gamestateModule.player1(), "c3");
-// gamestateModule.endTurn();
-// gamestateModule.isWinning(gamestateModule.player1());
+const eventsModule = (() => {
+  // modal
+  // selectors
+  const modal = document.querySelector(".playersModal");
+  const addPlayers = document.querySelector(".addPlayersButton");
+  const startGame = document.querySelector(".startGameButton");
 
-// console.log(gamestateModule.currentPlayer());
-// console.log(gamestateModule.playGame().endTurn());
-// console.log(gamestateModule.currentPlayer());
+  // opens Modal
+  addPlayers.addEventListener("click", () => {
+    modal.showModal();
+  });
+
+  // #TODO call `playGame()` one `startGame` click event
+  // kickoff game flow of events
+  startGame.addEventListener("click", () => {
+    // gets input value for player one
+    const playerOneName = document.getElementById("playerOneString").value;
+    // creates player one
+    playersModule.createPlayer(playerOneName);
+    // gets input vallue for player two
+    const playerTwoName = document.getElementById("playerTwoString").value;
+    // creates player two
+    playersModule.createPlayer(playerTwoName);
+
+    // init game, call playGame();
+    gamestateModule.playGame();
+
+    // append player1 to left side of screen
+    const playerOneElement = document.createElement("p");
+    playerOneElement.textContent = playerOneName;
+    document.querySelector(".playerOneDisplay").appendChild(playerOneElement);
+
+    // append player2 to right side of screen
+    const playerTwoElement = document.createElement("p");
+    playerTwoElement.textContent = playerTwoName;
+    document.querySelector(".playerTwoDisplay").appendChild(playerTwoElement);
+  });
+})();

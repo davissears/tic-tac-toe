@@ -8,7 +8,40 @@
         <title>Document</title>
     </head>
     <body>
-        <div class="window">
+        <dialog class="playersModal">
+            <form method="dialog" class="playersForm">
+                <div class="playerOneInputContainer">
+                    <input
+                        required
+                        id="playerOneString"
+                        type="text"
+                        placeholder="Player 1"
+                    />
+                </div>
+                <div class="playerTwoInputContainer">
+                    <input
+                        required
+                        id="playerTwoString"
+                        type="text"
+                        placeholder="Player 2"
+                    />
+                </div>
+                <div class="startGameButtonContainer">
+                    <input
+                        type="submit"
+                        class="startGameButton"
+                        value="Start Game"
+                    />
+                </div>
+            </form>
+        </dialog>
+        <div class="openModalContainer">
+            <button class="addPlayersButton">Add Players</button>
+        </div>
+        <!--player one container-->
+        <div class="playerOneDisplay" id="playerOneDisplay"></div>
+        <!--gameboard-->
+        <div class="boardViewport">
             <div id="game-board" class="gameboard">
                 <div id="c1" class="cell" data-cell-index="6"></div>
                 <div id="c2" class="cell" data-cell-index="7"></div>
@@ -21,5 +54,6 @@
                 <div id="a3" class="cell" data-cell-index="2"></div>
             </div>
         </div>
+        <div class="playerTwoDisplay" id="playerTwoDisplay"></div>
     </body>
 </html>
