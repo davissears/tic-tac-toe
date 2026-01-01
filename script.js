@@ -152,7 +152,6 @@ const gamestateModule = (() => {
     } else {
       state.winner = null;
     }
-    gameOver();
     return state.winner;
   };
   // tracks active player
@@ -224,7 +223,6 @@ const eventsModule = (() => {
     modal.showModal();
   });
 
-  // #TODO call `playGame()` one `startGame` click event
   // kickoff game flow of events
   startGame.addEventListener("click", () => {
     // gets input value for player one
@@ -236,17 +234,19 @@ const eventsModule = (() => {
     // creates player two
     playersModule.createPlayer(playerTwoName);
 
-    // init game, call playGame();
-    gamestateModule.playGame();
-
     // append player1 to left side of screen
     const playerOneElement = document.createElement("p");
     playerOneElement.textContent = playerOneName;
     document.querySelector(".playerOneDisplay").appendChild(playerOneElement);
+    playerOneElement.id = "playerOneNameDisplay";
 
     // append player2 to right side of screen
     const playerTwoElement = document.createElement("p");
     playerTwoElement.textContent = playerTwoName;
     document.querySelector(".playerTwoDisplay").appendChild(playerTwoElement);
+    playerTwoElement.id = "playerTwoNameDisplay";
+
+    // init game, call playGame();
+    gamestateModule.playGame();
   });
 })();

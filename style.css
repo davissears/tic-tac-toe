@@ -103,16 +103,29 @@ body {
     justify-content: center;
 }
 .playerOneDisplay {
+    display: grid;
     grid-column-start: 1 span;
     grid-row: 2;
     height: 15vh;
     align-items: center;
     justify-content: center;
+    font-size: 5rem;
 }
+.playerOneNameDisplay {
+    margin: auto;
+}
+
 .playerTwoDisplay {
+    display: grid;
     grid-column-start: 3/4;
     grid-row: 2;
     height: 15vh;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+}
+.playerTwoNameDisplay {
+    margin: auto;
 }
 
 /*gameboard*/
