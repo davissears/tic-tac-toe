@@ -13,6 +13,7 @@ let gameboardModule = (() => {
     c2: "",
     c3: "",
   };
+
   // methods
 
   const getBoard = () => gameboard;
@@ -67,6 +68,20 @@ const gamestateModule = (() => {
     placedMarks: 0,
     winner: null,
   };
+
+  // state proxy
+  const stateProxy = new Proxy(state, {
+    set(target, prop, value) {
+      const oldValue = target[prop];
+      // updates value
+      target[prop] = value;
+      const event = new StateChange("stateChange", {
+        detail: { prop, oldValue, newValue: value },
+      });
+      window.dispatchEvent(event);
+      return true;
+    },
+  });
 
   // methods
   // accepts player and gameboard position to place the players mark
@@ -208,6 +223,7 @@ const gamestateModule = (() => {
     gameOver,
     state,
     playGame,
+    stateProxy,
   };
 })();
 
@@ -246,6 +262,15 @@ const eventsModule = (() => {
     document.querySelector(".playerTwoDisplay").appendChild(playerTwoElement);
     playerTwoElement.id = "playerTwoNameDisplay";
 
+    // listen for gamestateModule.stateProxy changes
+    const getState = (targetProp, targetValue, callback) => {
+      window.addEventListener('stateChange', (event) => {
+        const { prop, newValue } = event.detail;
+        if (prop === targetProp && newValue === targetValue) {
+          callback(newValue);
+        }
+      });
+    };
     // init game, call playGame();
     gamestateModule.playGame();
   });
@@ -255,21 +280,4 @@ const eventsModule = (() => {
   // and make an eventListener to init player turn checking who's turn it is
   // listening for a click on the gameboard and calling
   // `gamestateModule.placeMark()`
-
-  // FIX: when user clicks `start game` "no users entered' error is thrown
-  
-  Object.defineProperty(gamestateModule.state, "currentPlayer", {
-    set: function (value) {
-      console.log(`Current player changed to ${value}`);
-      // Add event listener to init player turns
-      document.addEventListener("DOMContentLoaded", () => {
-        const gameboard = document.querySelector(".gameboard");
-        gameboard.addEventListener("click", (event) => {
-          if (event.target.classList.contains("cell")) {
-            gamestateModule.placeMark(event.target.id);
-          }
-        });
-      });
-    },
-  });
 })();
