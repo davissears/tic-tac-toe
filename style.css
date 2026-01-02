@@ -115,6 +115,11 @@ body {
     margin: auto;
 }
 
+.active {
+    background-color: green;
+    color: white;
+}
+
 .playerTwoDisplay {
     display: grid;
     grid-column-start: 3/4;

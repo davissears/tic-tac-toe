@@ -273,13 +273,25 @@ const eventsModule = (() => {
     document.querySelector(".playerTwoDisplay").appendChild(playerTwoElement);
     playerTwoElement.id = "playerTwoNameDisplay";
 
-    // listen for gamestateModule.stateProxy changes
+    // player turn events
+    // player turn indicator
+    //  player one
     getState("currentPlayer", playersModule.getPlayer1(), () => {
+      const turnIndicator = document.createElement("p");
       console.log("Player One's turn");
+      playerOneElement.classList.add("active");
+      playerTwoElement.classList.remove("active");
+      turnIndicator.textContent = "place your mark";
+      document.querySelector(".playerOneDisplay").appendChild(turnIndicator);
     });
-
+    // player two
     getState("currentPlayer", playersModule.getPlayer2(), () => {
       console.log("Player Two's turn");
+      playerTwoElement.classList.add("active");
+      playerOneElement.classList.remove("active");
+      const turnIndicator = document.createElement("p");
+      turnIndicator.textContent = "place your mark";
+      document.querySelector(".playerTwoDisplay").appendChild(turnIndicator);
     });
 
     // init game, call playGame();
