@@ -75,7 +75,7 @@ const gamestateModule = (() => {
       const oldValue = target[prop];
       // updates value
       target[prop] = value;
-      const event = new StateChange("stateChange", {
+      const event = new CustomEvent("stateChange", {
         detail: { prop, oldValue, newValue: value },
       });
       window.dispatchEvent(event);
@@ -114,58 +114,58 @@ const gamestateModule = (() => {
       board().a3 === player.mark
     ) {
       console.log(`${player.name} wins!`);
-      state.winner = player;
+      stateProxy.winner = player;
     } else if (
       board().b1 === player.mark &&
       board().b2 === player.mark &&
       board().b3 === player.mark
     ) {
       console.log(`${player.name} wins!`);
-      state.winner = player;
+      stateProxy.winner = player;
     } else if (
       board().c1 === player.mark &&
       board().c2 === player.mark &&
       board().c3 === player.mark
     ) {
       console.log(`${player.name} wins!`);
-      state.winner = player;
+      stateProxy.winner = player;
     } else if (
       board().a1 === player.mark &&
       board().b1 === player.mark &&
       board().c1 === player.mark
     ) {
       console.log(`${player.name} wins!`);
-      state.winner = player;
+      stateProxy.winner = player;
     } else if (
       board().a2 === player.mark &&
       board().b2 === player.mark &&
       board().c2 === player.mark
     ) {
       console.log(`${player.name} wins!`);
-      state.winner = player;
+      stateProxy.winner = player;
     } else if (
       board().a3 === player.mark &&
       board().b3 === player.mark &&
       board().c3 === player.mark
     ) {
       console.log(`${player.name} wins!`);
-      state.winner = player;
+      stateProxy.winner = player;
     } else if (
       board().a1 === player.mark &&
       board().b2 === player.mark &&
       board().c3 === player.mark
     ) {
       console.log(`${player.name} wins!`);
-      state.winner = player;
+      stateProxy.winner = player;
     } else if (
       board().a3 === player.mark &&
       board().b2 === player.mark &&
       board().c1 === player.mark
     ) {
       console.log(`${player.name} wins!`);
-      state.winner = player;
+      stateProxy.winner = player;
     } else {
-      state.winner = null;
+      stateProxy.winner = null;
     }
     return state.winner;
   };
@@ -177,8 +177,8 @@ const gamestateModule = (() => {
 
     // checks marks on gameboard to determine currentPlayer
     if (marksPlaced > state.placedMarks) {
-      state.placedMarks = marksPlaced;
-      state.currentPlayer =
+      stateProxy.placedMarks = marksPlaced;
+      stateProxy.currentPlayer =
         state.currentPlayer === player1() ? player2() : player1();
       // TODO remove this console.log
       console.log(`Turn ended. Next player: ${state.currentPlayer.name}`);
@@ -193,9 +193,9 @@ const gamestateModule = (() => {
   };
 
   const playGame = () => {
-    state.currentPlayer = player1();
-    state.placedMarks = 0;
-    state.winner = null;
+    stateProxy.currentPlayer = player1();
+    stateProxy.placedMarks = 0;
+    stateProxy.winner = null;
 
     // TODO remove this console.log
     console.table("Value of board():", board());
@@ -234,6 +234,17 @@ const eventsModule = (() => {
   const addPlayers = document.querySelector(".addPlayersButton");
   const startGame = document.querySelector(".startGameButton");
 
+  // get state proxy
+  // listen for gamestateModule.stateProxy changes
+  const getState = (targetProp, targetValue, callback) => {
+    window.addEventListener("stateChange", (event) => {
+      const { prop, newValue } = event.detail;
+      if (prop === targetProp && newValue === targetValue) {
+        callback(newValue);
+      }
+    });
+  };
+
   // opens Modal
   addPlayers.addEventListener("click", () => {
     modal.showModal();
@@ -263,14 +274,14 @@ const eventsModule = (() => {
     playerTwoElement.id = "playerTwoNameDisplay";
 
     // listen for gamestateModule.stateProxy changes
-    const getState = (targetProp, targetValue, callback) => {
-      window.addEventListener('stateChange', (event) => {
-        const { prop, newValue } = event.detail;
-        if (prop === targetProp && newValue === targetValue) {
-          callback(newValue);
-        }
-      });
-    };
+    getState("currentPlayer", playersModule.getPlayer1(), () => {
+      console.log("Player One's turn");
+    });
+
+    getState("currentPlayer", playersModule.getPlayer2(), () => {
+      console.log("Player Two's turn");
+    });
+
     // init game, call playGame();
     gamestateModule.playGame();
   });
