@@ -282,25 +282,42 @@ const eventsModule = (() => {
       playerOneElement.classList.add("active");
       playerTwoElement.classList.remove("active");
       turnIndicator.textContent = "place your mark";
-      document.querySelector(".playerOneDisplay").appendChild(turnIndicator);
+      document.querySelector(".p1Indicator").appendChild(turnIndicator);
+      // remove turnIndicator from player2 if present
+      const p2Indicator = document.querySelector(".p2Indicator");
+      if (p2Indicator.firstChild) {
+        p2Indicator.removeChild(p2Indicator.firstChild);
+      }
     });
     // player two
     getState("currentPlayer", playersModule.getPlayer2(), () => {
       console.log("Player Two's turn");
       playerTwoElement.classList.add("active");
       playerOneElement.classList.remove("active");
+
       const turnIndicator = document.createElement("p");
       turnIndicator.textContent = "place your mark";
-      document.querySelector(".playerTwoDisplay").appendChild(turnIndicator);
+      document.querySelector(".p2Indicator").appendChild(turnIndicator);
+      const p1Indicator = document.querySelector(".p1Indicator");
+      // remove turnIndicator from player1 if present
+      if (p1Indicator.firstChild) {
+        p1Indicator.removeChild(p1Indicator.firstChild);
+      }
     });
 
     // init game, call playGame();
     gamestateModule.playGame();
   });
 
-  // use `Object.defineProperty()` to watch for changes in
-  // `gamestateModule.state.currentPlayer` console.log the change
-  // and make an eventListener to init player turn checking who's turn it is
-  // listening for a click on the gameboard and calling
-  // `gamestateModule.placeMark()`
+  // event listener to call 'placeMark'
+  document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("cell")) {
+      const currentPlayer = gamestateModule.state.currentPlayer;
+      if (currentPlayer) {
+        gamestateModule.placeMark(currentPlayer, event.target.id);
+        gamestateModule.isWinning(currentPlayer);
+        gamestateModule.endTurn();
+      }
+    }
+  });
 })();
