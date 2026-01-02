@@ -20,6 +20,8 @@ let gameboardModule = (() => {
 
   function updateBoard(spot, mark) {
     gameboard[spot] = mark;
+    // TODO remove this console log
+    console.table(gameboard);
     return true;
   }
   return { getBoard, updateBoard, gameboard };
@@ -314,10 +316,26 @@ const eventsModule = (() => {
     if (event.target.classList.contains("cell")) {
       const currentPlayer = gamestateModule.state.currentPlayer;
       if (currentPlayer) {
+        // call placeMark
         gamestateModule.placeMark(currentPlayer, event.target.id);
+        // check for win
         gamestateModule.isWinning(currentPlayer);
+        // end turn
         gamestateModule.endTurn();
       }
+      // populate text from 'gameboardModule.gameboard'
+      // properties to corelating cell
+      //
+      const board = gameboardModule.getBoard();
+      Object.entries(board).forEach(([key, value]) => {
+        const cell = document.getElementById(key);
+        if (cell) {
+          cell.textContent = value;
+        }
+      });
     }
+    // populate text from 'gameboardModule.gameboard'
+    // properties to corelating cell
+    //
   });
 })();
