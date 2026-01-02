@@ -98,9 +98,7 @@ const gamestateModule = (() => {
   };
   // logs game over if `isWinnner()` has determined a winner
   const gameOver = () => {
-    if (state.winner === null) {
-      return;
-    } else if (state.winner.id === 1 || state.winner.id === 2) {
+    if (state.winner) {
       console.log(`GAME OVER: ${state.winner.name} wins!`);
     } else if (state.placedMarks === 9) {
       console.log(`GAME OVER: DRAW`);
@@ -322,6 +320,8 @@ const eventsModule = (() => {
         gamestateModule.isWinning(currentPlayer);
         // end turn
         gamestateModule.endTurn();
+        // check game over
+        gamestateModule.gameOver();
       }
       // populate text from 'gameboardModule.gameboard'
       // properties to corelating cell
