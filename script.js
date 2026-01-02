@@ -249,4 +249,27 @@ const eventsModule = (() => {
     // init game, call playGame();
     gamestateModule.playGame();
   });
+
+  // use `Object.defineProperty()` to watch for changes in
+  // `gamestateModule.state.currentPlayer` console.log the change
+  // and make an eventListener to init player turn checking who's turn it is
+  // listening for a click on the gameboard and calling
+  // `gamestateModule.placeMark()`
+
+  // FIX: when user clicks `start game` "no users entered' error is thrown
+  
+  Object.defineProperty(gamestateModule.state, "currentPlayer", {
+    set: function (value) {
+      console.log(`Current player changed to ${value}`);
+      // Add event listener to init player turns
+      document.addEventListener("DOMContentLoaded", () => {
+        const gameboard = document.querySelector(".gameboard");
+        gameboard.addEventListener("click", (event) => {
+          if (event.target.classList.contains("cell")) {
+            gamestateModule.placeMark(event.target.id);
+          }
+        });
+      });
+    },
+  });
 })();
