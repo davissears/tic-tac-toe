@@ -251,6 +251,8 @@ const eventsModule = (() => {
   const modal = document.querySelector(".playersModal");
   const addPlayers = document.querySelector(".addPlayersButton");
   const startGame = document.querySelector(".startGameButton");
+  const gameStatusDisplay = document.querySelector(".gameStatusDisplay");
+  const statusText = document.querySelector(".statusText");
 
   // get state proxy
   // listen for gamestateModule.stateProxy changes
@@ -270,6 +272,9 @@ const eventsModule = (() => {
 
   // kickoff game flow of events
   startGame.addEventListener("click", () => {
+    addPlayers.style.display = "none";
+    gameStatusDisplay.style.display = "block";
+
     // gets input value for player one
     const playerOneName = document.getElementById("playerOneString").value;
     // creates player one
@@ -297,6 +302,7 @@ const eventsModule = (() => {
     getState("currentPlayer", playersModule.getPlayer1(), () => {
       const turnIndicator = document.createElement("p");
       console.log("Player One's turn");
+      statusText.textContent = `${playersModule.getPlayer1().name}'s Turn`;
       playerOneElement.classList.add("active");
       playerTwoElement.classList.remove("active");
       turnIndicator.textContent = "place your mark";
@@ -310,6 +316,7 @@ const eventsModule = (() => {
     // player two
     getState("currentPlayer", playersModule.getPlayer2(), () => {
       console.log("Player Two's turn");
+      statusText.textContent = `${playersModule.getPlayer2().name}'s Turn`;
       playerTwoElement.classList.add("active");
       playerOneElement.classList.remove("active");
 
@@ -358,6 +365,7 @@ const eventsModule = (() => {
   window.addEventListener("gameover", (event) => {
     const winner = event.detail.winner;
     const messageText = winner ? `Player ${winner.name} wins!` : "It's a tie!";
+    statusText.textContent = messageText;
 
     const messageElement = document.createElement("p");
     messageElement.textContent = messageText;

@@ -37,6 +37,12 @@
         </dialog>
         <div class="openModalContainer">
             <button class="addPlayersButton">Add Players</button>
+            <div class="gameStatusDisplay" style="display: none;">
+                <div class="carousel-track">
+                    <p class="statusText"></p>
+                    <p class="statusText"></p> <!-- Duplicated for smooth loop if needed, or JS can handle it -->
+                </div>
+            </div>
         </div>
         <!--player one container-->
         <div class="playerOneDisplay" id="playerOneDisplay">
