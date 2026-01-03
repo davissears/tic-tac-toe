@@ -24,7 +24,14 @@ let gameboardModule = (() => {
     console.table(gameboard);
     return true;
   }
-  return { getBoard, updateBoard, gameboard };
+
+  function resetBoard() {
+    Object.keys(gameboard).forEach((key) => {
+      gameboard[key] = "";
+    });
+  }
+
+  return { getBoard, updateBoard, gameboard, resetBoard };
 })();
 
 // players module
@@ -56,7 +63,12 @@ const playersModule = (() => {
   const getPlayer1 = () => players[0];
   const getPlayer2 = () => players[1];
 
-  return { createPlayer, getPlayers, getPlayer1, getPlayer2 };
+  const resetPlayers = () => {
+    playerCount = 0;
+    players.length = 0;
+  };
+
+  return { createPlayer, getPlayers, getPlayer1, getPlayer2, resetPlayers };
 })();
 // gamestate Module
 const gamestateModule = (() => {
@@ -229,6 +241,14 @@ const gamestateModule = (() => {
     return state;
   };
 
+  const resetGame = () => {
+    gameboardModule.resetBoard();
+    stateProxy.currentPlayer = player1();
+    stateProxy.placedMarks = 0;
+    stateProxy.winner = null;
+    stateProxy.winningCombination = null;
+  };
+
   // TODO remove 'player1' & 'player2' from return statement
   return {
     player1,
@@ -242,6 +262,7 @@ const gamestateModule = (() => {
     state,
     playGame,
     stateProxy,
+    resetGame,
   };
 })();
 
@@ -253,6 +274,8 @@ const eventsModule = (() => {
   const startGame = document.querySelector(".startGameButton");
   const gameStatusDisplay = document.querySelector(".gameStatusDisplay");
   const statusText = document.querySelector(".statusText");
+  const resetButton = document.querySelector(".resetButton");
+  const changePlayersButton = document.querySelector(".changePlayersButton");
 
   // get state proxy
   // listen for gamestateModule.stateProxy changes
@@ -337,7 +360,13 @@ const eventsModule = (() => {
   // event listener to call 'placeMark'
   document.addEventListener("click", (event) => {
     if (event.target.classList.contains("cell")) {
-      const currentPlayer = gamestateModule.state.currentPlayer;
+      const state = gamestateModule.state;
+      // Check if game is already over
+      if (state.winner || state.placedMarks === 9) {
+        return;
+      }
+
+      const currentPlayer = state.currentPlayer;
       if (currentPlayer) {
         // call placeMark
         gamestateModule.placeMark(currentPlayer, event.target.id);
@@ -399,5 +428,71 @@ const eventsModule = (() => {
         }
       });
     }
+
+    resetButton.style.display = "block";
+    changePlayersButton.style.display = "block";
+  });
+
+  resetButton.addEventListener("click", () => {
+    gamestateModule.resetGame();
+    resetButton.style.display = "none";
+    changePlayersButton.style.display = "none";
+
+    // Clear board UI
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach((cell) => {
+      cell.textContent = "";
+      cell.classList.remove("winning-cell");
+    });
+
+    // Reset player indicators
+    const p1Indicator = document.querySelector(".p1Indicator");
+    const p2Indicator = document.querySelector(".p2Indicator");
+    if (p1Indicator) p1Indicator.innerHTML = "";
+    if (p2Indicator) p2Indicator.innerHTML = "";
+
+    const p1Display = document.getElementById("playerOneNameDisplay");
+    const p2Display = document.getElementById("playerTwoNameDisplay");
+    if (p1Display) p1Display.classList.add("active"); // Player 1 starts
+    if (p2Display) p2Display.classList.remove("active");
+
+    statusText.textContent = `${playersModule.getPlayer1().name}'s Turn`;
+
+    const turnIndicator = document.createElement("p");
+    turnIndicator.textContent = "place your mark";
+    p1Indicator.appendChild(turnIndicator);
+  });
+
+  changePlayersButton.addEventListener("click", () => {
+    gamestateModule.resetGame();
+    playersModule.resetPlayers();
+    resetButton.style.display = "none";
+    changePlayersButton.style.display = "none";
+
+    // Clear board UI
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach((cell) => {
+      cell.textContent = "";
+      cell.classList.remove("winning-cell");
+    });
+
+    // Reset player indicators and Remove Player Names
+    const p1Indicator = document.querySelector(".p1Indicator");
+    const p2Indicator = document.querySelector(".p2Indicator");
+    if (p1Indicator) p1Indicator.innerHTML = "";
+    if (p2Indicator) p2Indicator.innerHTML = "";
+
+    const p1Display = document.getElementById("playerOneNameDisplay");
+    const p2Display = document.getElementById("playerTwoNameDisplay");
+    if (p1Display) p1Display.remove();
+    if (p2Display) p2Display.remove();
+
+    // Reset Forms
+    document.getElementById("playerOneString").value = "";
+    document.getElementById("playerTwoString").value = "";
+
+    // Hide Status, Show Add Players
+    gameStatusDisplay.style.display = "none";
+    addPlayers.style.display = "block";
   });
 })();

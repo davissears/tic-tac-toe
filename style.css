@@ -223,14 +223,48 @@ body {
     font-size: 2rem;
     font-weight: bold;
     white-space: nowrap;
-    width: 50vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .carousel-track {
+    flex-grow: 1;
     display: inline-block;
     white-space: nowrap;
     animation: scroll-left 10s linear infinite;
     padding-left: 100%; /* Start from right */
+}
+
+.resetButton {
+    margin-left: 20px;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.changePlayersButton {
+    margin-left: 20px;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.resetButton:hover,
+.changePlayersButton:hover {
+    background-color: #555;
 }
 
 .statusText {
