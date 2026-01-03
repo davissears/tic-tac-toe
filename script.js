@@ -1,4 +1,4 @@
-// TODO: specify roadmap to progress development
+
 
 // gameboard module
 let gameboardModule = (() => {
