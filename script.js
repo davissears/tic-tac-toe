@@ -15,13 +15,10 @@ let gameboardModule = (() => {
   };
 
   // methods
-
   const getBoard = () => gameboard;
 
   function updateBoard(spot, mark) {
     gameboard[spot] = mark;
-    // TODO remove this console log
-    console.table(gameboard);
     return true;
   }
 
@@ -70,21 +67,32 @@ const playersModule = (() => {
 
   return { createPlayer, getPlayers, getPlayer1, getPlayer2, resetPlayers };
 })();
+
 // gamestate Module
 const gamestateModule = (() => {
+  // defines methods to reuse from `playersModule` and `gamestateModule`
   const player1 = () => playersModule.getPlayer1();
   const player2 = () => playersModule.getPlayer2();
   const board = () => gameboardModule.getBoard();
 
   // stores gamestate variable values.
   const state = {
+    // player trun
     currentPlayer: null,
+    // used to determine a tie endgame condition &
+    // player turn tracking support
     placedMarks: 0,
+    // updated & checked by `isWinning()` & `gameOver()`
     winner: null,
+    // stores winning condition
+    // `isWinning()1` updates value if win condition is met
+    // 'eventsModule` checks for event delegation
     winningCombination: null,
   };
 
   // state proxy
+  // updates state values and dispatches a custom event
+  // for `eventsModule`
   const stateProxy = new Proxy(state, {
     set(target, prop, value) {
       const oldValue = target[prop];
@@ -93,35 +101,38 @@ const gamestateModule = (() => {
       const event = new CustomEvent("stateChange", {
         detail: { prop, oldValue, newValue: value },
       });
+      // makes values available globally
       window.dispatchEvent(event);
       return true;
     },
   });
 
-  // methods
   // accepts player and gameboard position to place the players mark
   const placeMark = (player, spot) => {
     const mark = player.mark;
     const updateBoard = gameboardModule.updateBoard(spot, mark);
-    // TODO remove this console.log
-    console.log(`${player.name} placed a ${mark} at ${spot}`);
     return updateBoard;
     // call example:
     //  gamestateModule.placeMark(gamestateModule.player1(), 'a1');
   };
+
   // logs game over if `isWinnner()` has determined a winner
   const gameOver = () => {
+    // checks if endgame conditins are met
+    // by checking state.winner value
+    // & makes value globally available
     if (stateProxy.winner !== null) {
-      console.log(`GAME OVER: ${state.winner.name} wins!`);
       const event = new CustomEvent("gameover", {
         detail: { winner: state.winner },
       });
+      // makes state variable available globally
       window.dispatchEvent(event);
+      // checks `state.placedMarks` to determine a tie
     } else if (state.placedMarks === 9) {
-      console.log(`GAME OVER: DRAW`);
       const event = new CustomEvent("gameover", {
         detail: { winner: null },
       });
+      // makes state variable available globally
       window.dispatchEvent(event);
     }
   };
@@ -134,7 +145,6 @@ const gamestateModule = (() => {
       board().a2 === player.mark &&
       board().a3 === player.mark
     ) {
-      console.log(`${player.name} wins!`);
       stateProxy.winner = player;
       stateProxy.winningCombination = ["a1", "a2", "a3"];
     } else if (
@@ -142,7 +152,6 @@ const gamestateModule = (() => {
       board().b2 === player.mark &&
       board().b3 === player.mark
     ) {
-      console.log(`${player.name} wins!`);
       stateProxy.winner = player;
       stateProxy.winningCombination = ["b1", "b2", "b3"];
     } else if (
@@ -150,7 +159,6 @@ const gamestateModule = (() => {
       board().c2 === player.mark &&
       board().c3 === player.mark
     ) {
-      console.log(`${player.name} wins!`);
       stateProxy.winner = player;
       stateProxy.winningCombination = ["c1", "c2", "c3"];
     } else if (
@@ -158,7 +166,6 @@ const gamestateModule = (() => {
       board().b1 === player.mark &&
       board().c1 === player.mark
     ) {
-      console.log(`${player.name} wins!`);
       stateProxy.winner = player;
       stateProxy.winningCombination = ["a1", "b1", "c1"];
     } else if (
@@ -166,7 +173,6 @@ const gamestateModule = (() => {
       board().b2 === player.mark &&
       board().c2 === player.mark
     ) {
-      console.log(`${player.name} wins!`);
       stateProxy.winner = player;
       stateProxy.winningCombination = ["a2", "b2", "c2"];
     } else if (
@@ -174,7 +180,6 @@ const gamestateModule = (() => {
       board().b3 === player.mark &&
       board().c3 === player.mark
     ) {
-      console.log(`${player.name} wins!`);
       stateProxy.winner = player;
       stateProxy.winningCombination = ["a3", "b3", "c3"];
     } else if (
@@ -182,7 +187,6 @@ const gamestateModule = (() => {
       board().b2 === player.mark &&
       board().c3 === player.mark
     ) {
-      console.log(`${player.name} wins!`);
       stateProxy.winner = player;
       stateProxy.winningCombination = ["a1", "b2", "c3"];
     } else if (
@@ -190,7 +194,6 @@ const gamestateModule = (() => {
       board().b2 === player.mark &&
       board().c1 === player.mark
     ) {
-      console.log(`${player.name} wins!`);
       stateProxy.winner = player;
       stateProxy.winningCombination = ["a3", "b2", "c1"];
     } else {
@@ -201,46 +204,42 @@ const gamestateModule = (() => {
   };
   // tracks active player
   const endTurn = () => {
+    // gets values from gameboardModule.gameboard array
+    // counts updated value & stores it
     const marksPlaced = Object.values(board()).filter(
       (mark) => mark !== "",
     ).length;
 
     // checks marks on gameboard to determine currentPlayer
     if (marksPlaced > state.placedMarks) {
+      // updates state.placedMarks
       stateProxy.placedMarks = marksPlaced;
+      // updates state.currentPlayer
       stateProxy.currentPlayer =
         state.currentPlayer === player1() ? player2() : player1();
-      // TODO remove this console.log
-      console.log(`Turn ended. Next player: ${state.currentPlayer.name}`);
       // error handling
     } else {
-      // TODO remove this console log
-      console.warn(`It is still ${state.currentPlayer.name}'s turn.`);
       throw new Error("No move made yet.");
     }
 
     return (state.currentPlayer, state.marksPlaced);
   };
 
+  // inits state of game
   const playGame = () => {
+    // sets initial state of game
     stateProxy.currentPlayer = player1();
     stateProxy.placedMarks = 0;
     stateProxy.winner = null;
 
-    // TODO remove this console.log
-    console.table("Value of board():", board());
-
     if (!state.currentPlayer) {
-      // TODO remove this console log
-      console.warn(
+      throw new Error(
         "No players found. Please create players before starting the game.",
       );
-      return;
     }
-
-    return state;
   };
 
+  // resets state values
   const resetGame = () => {
     gameboardModule.resetBoard();
     stateProxy.currentPlayer = player1();
@@ -251,16 +250,12 @@ const gamestateModule = (() => {
 
   // TODO remove 'player1' & 'player2' from return statement
   return {
-    player1,
-    player2,
-    board,
     placeMark,
     playGame,
     endTurn,
     isWinning,
     gameOver,
     state,
-    playGame,
     stateProxy,
     resetGame,
   };
@@ -319,16 +314,18 @@ const eventsModule = (() => {
     document.querySelector(".playerTwoDisplay").appendChild(playerTwoElement);
     playerTwoElement.id = "playerTwoNameDisplay";
 
-    // player turn events
     // player turn indicator
     //  player one
     getState("currentPlayer", playersModule.getPlayer1(), () => {
       const turnIndicator = document.createElement("p");
-      console.log("Player One's turn");
       statusText.textContent = `${playersModule.getPlayer1().name}'s Turn`;
+      // toggles player 1 to active
       playerOneElement.classList.add("active");
+      // toggles player 2 to innactive
       playerTwoElement.classList.remove("active");
+      // adds text
       turnIndicator.textContent = "place your mark";
+      // appends element
       document.querySelector(".p1Indicator").appendChild(turnIndicator);
       // remove turnIndicator from player2 if present
       const p2Indicator = document.querySelector(".p2Indicator");
@@ -336,13 +333,13 @@ const eventsModule = (() => {
         p2Indicator.removeChild(p2Indicator.firstChild);
       }
     });
+
     // player two
     getState("currentPlayer", playersModule.getPlayer2(), () => {
       console.log("Player Two's turn");
       statusText.textContent = `${playersModule.getPlayer2().name}'s Turn`;
       playerTwoElement.classList.add("active");
       playerOneElement.classList.remove("active");
-
       const turnIndicator = document.createElement("p");
       turnIndicator.textContent = "place your mark";
       document.querySelector(".p2Indicator").appendChild(turnIndicator);
@@ -389,16 +386,20 @@ const eventsModule = (() => {
       });
     }
   });
-  // event listener: if gamestateModule.gameOver() logs to console
-  // run code to change text in winning player display container
+
+  // Listens for the event dispatched by `gamestateModule.gameOver()` to update the UI.
   window.addEventListener("gameover", (event) => {
+    // gets winner
     const winner = event.detail.winner;
+    // endgame message content for gameStatusDisplay
     const messageText = winner ? `Player ${winner.name} wins!` : "It's a tie!";
+    // assigns gameStatusDisplay child as endgame message
     statusText.textContent = messageText;
-
+    // declares message as an element
     const messageElement = document.createElement("p");
+    // assigns gameStatusDisplay child text content as endgame message
     messageElement.textContent = messageText;
-
+    // TODO: resume code review here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     const p1Indicator = document.querySelector(".p1Indicator");
     const p2Indicator = document.querySelector(".p2Indicator");
 
@@ -419,6 +420,7 @@ const eventsModule = (() => {
       if (p2Display) p2Display.classList.add("active");
     }
 
+    // checks state.winningCombination to highlight winning cells
     const winningCombination = gamestateModule.state.winningCombination;
     if (winningCombination) {
       winningCombination.forEach((cellId) => {
@@ -469,7 +471,7 @@ const eventsModule = (() => {
     resetButton.style.display = "none";
     changePlayersButton.style.display = "none";
 
-    // Clear board UI
+    // Clears board UI
     const cells = document.querySelectorAll(".cell");
     cells.forEach((cell) => {
       cell.textContent = "";
