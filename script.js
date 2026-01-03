@@ -376,10 +376,18 @@ const eventsModule = (() => {
     if (p1Indicator) p1Indicator.innerHTML = "";
     if (p2Indicator) p2Indicator.innerHTML = "";
 
+    // remove active class from both players initially on game over
+    const p1Display = document.getElementById("playerOneNameDisplay");
+    const p2Display = document.getElementById("playerTwoNameDisplay");
+    if (p1Display) p1Display.classList.remove("active");
+    if (p2Display) p2Display.classList.remove("active");
+
     if (winner === playersModule.getPlayer1()) {
       if (p1Indicator) p1Indicator.appendChild(messageElement);
+      if (p1Display) p1Display.classList.add("active");
     } else if (winner === playersModule.getPlayer2()) {
       if (p2Indicator) p2Indicator.appendChild(messageElement);
+      if (p2Display) p2Display.classList.add("active");
     }
 
     const winningCombination = gamestateModule.state.winningCombination;

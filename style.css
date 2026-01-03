@@ -223,6 +223,7 @@ body {
     font-size: 2rem;
     font-weight: bold;
     white-space: nowrap;
+    width: 50vw;
 }
 
 .carousel-track {
@@ -235,6 +236,8 @@ body {
 .statusText {
     display: inline-block;
     padding-right: 50px; /* Space between repeated text if we were looping multiple */
+    white-space: nowrap;
+    text-wrap: none;
 }
 
 @keyframes scroll-left {
