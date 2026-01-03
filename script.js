@@ -69,6 +69,7 @@ const gamestateModule = (() => {
     currentPlayer: null,
     placedMarks: 0,
     winner: null,
+    winningCombination: null,
   };
 
   // state proxy
@@ -98,10 +99,18 @@ const gamestateModule = (() => {
   };
   // logs game over if `isWinnner()` has determined a winner
   const gameOver = () => {
-    if (state.winner) {
+    if (stateProxy.winner !== null) {
       console.log(`GAME OVER: ${state.winner.name} wins!`);
+      const event = new CustomEvent("gameover", {
+        detail: { winner: state.winner },
+      });
+      window.dispatchEvent(event);
     } else if (state.placedMarks === 9) {
       console.log(`GAME OVER: DRAW`);
+      const event = new CustomEvent("gameover", {
+        detail: { winner: null },
+      });
+      window.dispatchEvent(event);
     }
   };
 
@@ -115,6 +124,7 @@ const gamestateModule = (() => {
     ) {
       console.log(`${player.name} wins!`);
       stateProxy.winner = player;
+      stateProxy.winningCombination = ["a1", "a2", "a3"];
     } else if (
       board().b1 === player.mark &&
       board().b2 === player.mark &&
@@ -122,6 +132,7 @@ const gamestateModule = (() => {
     ) {
       console.log(`${player.name} wins!`);
       stateProxy.winner = player;
+      stateProxy.winningCombination = ["b1", "b2", "b3"];
     } else if (
       board().c1 === player.mark &&
       board().c2 === player.mark &&
@@ -129,6 +140,7 @@ const gamestateModule = (() => {
     ) {
       console.log(`${player.name} wins!`);
       stateProxy.winner = player;
+      stateProxy.winningCombination = ["c1", "c2", "c3"];
     } else if (
       board().a1 === player.mark &&
       board().b1 === player.mark &&
@@ -136,6 +148,7 @@ const gamestateModule = (() => {
     ) {
       console.log(`${player.name} wins!`);
       stateProxy.winner = player;
+      stateProxy.winningCombination = ["a1", "b1", "c1"];
     } else if (
       board().a2 === player.mark &&
       board().b2 === player.mark &&
@@ -143,6 +156,7 @@ const gamestateModule = (() => {
     ) {
       console.log(`${player.name} wins!`);
       stateProxy.winner = player;
+      stateProxy.winningCombination = ["a2", "b2", "c2"];
     } else if (
       board().a3 === player.mark &&
       board().b3 === player.mark &&
@@ -150,6 +164,7 @@ const gamestateModule = (() => {
     ) {
       console.log(`${player.name} wins!`);
       stateProxy.winner = player;
+      stateProxy.winningCombination = ["a3", "b3", "c3"];
     } else if (
       board().a1 === player.mark &&
       board().b2 === player.mark &&
@@ -157,6 +172,7 @@ const gamestateModule = (() => {
     ) {
       console.log(`${player.name} wins!`);
       stateProxy.winner = player;
+      stateProxy.winningCombination = ["a1", "b2", "c3"];
     } else if (
       board().a3 === player.mark &&
       board().b2 === player.mark &&
@@ -164,8 +180,10 @@ const gamestateModule = (() => {
     ) {
       console.log(`${player.name} wins!`);
       stateProxy.winner = player;
+      stateProxy.winningCombination = ["a3", "b2", "c1"];
     } else {
       stateProxy.winner = null;
+      stateProxy.winningCombination = null;
     }
     return state.winner;
   };
@@ -334,8 +352,36 @@ const eventsModule = (() => {
         }
       });
     }
-    // populate text from 'gameboardModule.gameboard'
-    // properties to corelating cell
-    //
+  });
+  // event listener: if gamestateModule.gameOver() logs to console
+  // run code to change text in winning player display container
+  window.addEventListener("gameover", (event) => {
+    const winner = event.detail.winner;
+    const messageText = winner ? `Player ${winner.name} wins!` : "It's a tie!";
+
+    const messageElement = document.createElement("p");
+    messageElement.textContent = messageText;
+
+    const p1Indicator = document.querySelector(".p1Indicator");
+    const p2Indicator = document.querySelector(".p2Indicator");
+
+    if (p1Indicator) p1Indicator.innerHTML = "";
+    if (p2Indicator) p2Indicator.innerHTML = "";
+
+    if (winner === playersModule.getPlayer1()) {
+      if (p1Indicator) p1Indicator.appendChild(messageElement);
+    } else if (winner === playersModule.getPlayer2()) {
+      if (p2Indicator) p2Indicator.appendChild(messageElement);
+    }
+
+    const winningCombination = gamestateModule.state.winningCombination;
+    if (winningCombination) {
+      winningCombination.forEach((cellId) => {
+        const cellElement = document.getElementById(cellId);
+        if (cellElement) {
+          cellElement.classList.add("winning-cell");
+        }
+      });
+    }
   });
 })();

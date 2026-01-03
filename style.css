@@ -202,3 +202,7 @@ body {
     background-color: lightgray;
     cursor: pointer;
 }
+
+.winning-cell {
+    background-color: #90ee90; /* Light green */
+}
