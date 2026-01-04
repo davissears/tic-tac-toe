@@ -1,5 +1,3 @@
-
-
 // gameboard module
 let gameboardModule = (() => {
   const gameboard = {
@@ -248,7 +246,6 @@ const gamestateModule = (() => {
     stateProxy.winningCombination = null;
   };
 
-  // TODO remove 'player1' & 'player2' from return statement
   return {
     placeMark,
     playGame,
@@ -399,10 +396,10 @@ const eventsModule = (() => {
     const messageElement = document.createElement("p");
     // assigns gameStatusDisplay child text content as endgame message
     messageElement.textContent = messageText;
-    // TODO: resume code review here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // selects p1 & p2 indicators in player display.container
     const p1Indicator = document.querySelector(".p1Indicator");
     const p2Indicator = document.querySelector(".p2Indicator");
-
+    // clears player indicator message
     if (p1Indicator) p1Indicator.innerHTML = "";
     if (p2Indicator) p2Indicator.innerHTML = "";
 
@@ -412,38 +409,55 @@ const eventsModule = (() => {
     if (p1Display) p1Display.classList.remove("active");
     if (p2Display) p2Display.classList.remove("active");
 
+    // check if p1 is winner against state
     if (winner === playersModule.getPlayer1()) {
+      // append winner message to p1 status area
       if (p1Indicator) p1Indicator.appendChild(messageElement);
+      // toggle p1 name display to active
       if (p1Display) p1Display.classList.add("active");
+      // else run same check for p2
     } else if (winner === playersModule.getPlayer2()) {
+      // append winner message to p2 status area
       if (p2Indicator) p2Indicator.appendChild(messageElement);
+      // toggle p2 name display to active
       if (p2Display) p2Display.classList.add("active");
     }
 
     // checks state.winningCombination to highlight winning cells
+    //  gets winning condition from state.winningCombination
     const winningCombination = gamestateModule.state.winningCombination;
+    // if winningCombination exists
     if (winningCombination) {
+      // loop through winningCombination array
       winningCombination.forEach((cellId) => {
         const cellElement = document.getElementById(cellId);
+        // if cellElement exists
         if (cellElement) {
+          // add winning-cell class to cellElement
           cellElement.classList.add("winning-cell");
         }
       });
     }
-
+    // sets display styling for endgame buttons
     resetButton.style.display = "block";
     changePlayersButton.style.display = "block";
   });
 
+  // reset button behavior
   resetButton.addEventListener("click", () => {
+    // call `resetGame()`
     gamestateModule.resetGame();
+    // hide buttons
     resetButton.style.display = "none";
     changePlayersButton.style.display = "none";
 
-    // Clear board UI
+    // TODO: resume code review here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // Clear gameboard cell content
     const cells = document.querySelectorAll(".cell");
     cells.forEach((cell) => {
+      // clears text content
       cell.textContent = "";
+      // clears winning class
       cell.classList.remove("winning-cell");
     });
 
