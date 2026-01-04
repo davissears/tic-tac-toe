@@ -1,16 +1,6 @@
 // gameboard module
 let gameboardModule = (() => {
-  const gameboard = {
-    a1: "",
-    a2: "",
-    a3: "",
-    b1: "",
-    b2: "",
-    b3: "",
-    c1: "",
-    c2: "",
-    c3: "",
-  };
+  const gameboard = ["", "", "", "", "", "", "", "", ""];
 
   // methods
   const getBoard = () => gameboard;
@@ -137,69 +127,96 @@ const gamestateModule = (() => {
 
   // checks gameboard object for winning conditions
   // & updates state object if a winner is determined
+  // const isWinning = (player) => {
+  //   if (
+  //     board().a1 === player.mark &&
+  //     board().a2 === player.mark &&
+  //     board().a3 === player.mark
+  //   ) {
+  //     stateProxy.winner = player;
+  //     stateProxy.winningCombination = ["a1", "a2", "a3"];
+  //   } else if (
+  //     board().b1 === player.mark &&
+  //     board().b2 === player.mark &&
+  //     board().b3 === player.mark
+  //   ) {
+  //     stateProxy.winner = player;
+  //     stateProxy.winningCombination = ["b1", "b2", "b3"];
+  //   } else if (
+  //     board().c1 === player.mark &&
+  //     board().c2 === player.mark &&
+  //     board().c3 === player.mark
+  //   ) {
+  //     stateProxy.winner = player;
+  //     stateProxy.winningCombination = ["c1", "c2", "c3"];
+  //   } else if (
+  //     board().a1 === player.mark &&
+  //     board().b1 === player.mark &&
+  //     board().c1 === player.mark
+  //   ) {
+  //     stateProxy.winner = player;
+  //     stateProxy.winningCombination = ["a1", "b1", "c1"];
+  //   } else if (
+  //     board().a2 === player.mark &&
+  //     board().b2 === player.mark &&
+  //     board().c2 === player.mark
+  //   ) {
+  //     stateProxy.winner = player;
+  //     stateProxy.winningCombination = ["a2", "b2", "c2"];
+  //   } else if (
+  //     board().a3 === player.mark &&
+  //     board().b3 === player.mark &&
+  //     board().c3 === player.mark
+  //   ) {
+  //     stateProxy.winner = player;
+  //     stateProxy.winningCombination = ["a3", "b3", "c3"];
+  //   } else if (
+  //     board().a1 === player.mark &&
+  //     board().b2 === player.mark &&
+  //     board().c3 === player.mark
+  //   ) {
+  //     stateProxy.winner = player;
+  //     stateProxy.winningCombination = ["a1", "b2", "c3"];
+  //   } else if (
+  //     board().a3 === player.mark &&
+  //     board().b2 === player.mark &&
+  //     board().c1 === player.mark
+  //   ) {
+  //     stateProxy.winner = player;
+  //     stateProxy.winningCombination = ["a3", "b2", "c1"];
+  //   } else {
+  //     stateProxy.winner = null;
+  //     stateProxy.winningCombination = null;
+  //   }
+  //   return state.winner;
+  // };
+
   const isWinning = (player) => {
-    if (
-      board().a1 === player.mark &&
-      board().a2 === player.mark &&
-      board().a3 === player.mark
-    ) {
-      stateProxy.winner = player;
-      stateProxy.winningCombination = ["a1", "a2", "a3"];
-    } else if (
-      board().b1 === player.mark &&
-      board().b2 === player.mark &&
-      board().b3 === player.mark
-    ) {
-      stateProxy.winner = player;
-      stateProxy.winningCombination = ["b1", "b2", "b3"];
-    } else if (
-      board().c1 === player.mark &&
-      board().c2 === player.mark &&
-      board().c3 === player.mark
-    ) {
-      stateProxy.winner = player;
-      stateProxy.winningCombination = ["c1", "c2", "c3"];
-    } else if (
-      board().a1 === player.mark &&
-      board().b1 === player.mark &&
-      board().c1 === player.mark
-    ) {
-      stateProxy.winner = player;
-      stateProxy.winningCombination = ["a1", "b1", "c1"];
-    } else if (
-      board().a2 === player.mark &&
-      board().b2 === player.mark &&
-      board().c2 === player.mark
-    ) {
-      stateProxy.winner = player;
-      stateProxy.winningCombination = ["a2", "b2", "c2"];
-    } else if (
-      board().a3 === player.mark &&
-      board().b3 === player.mark &&
-      board().c3 === player.mark
-    ) {
-      stateProxy.winner = player;
-      stateProxy.winningCombination = ["a3", "b3", "c3"];
-    } else if (
-      board().a1 === player.mark &&
-      board().b2 === player.mark &&
-      board().c3 === player.mark
-    ) {
-      stateProxy.winner = player;
-      stateProxy.winningCombination = ["a1", "b2", "c3"];
-    } else if (
-      board().a3 === player.mark &&
-      board().b2 === player.mark &&
-      board().c1 === player.mark
-    ) {
-      stateProxy.winner = player;
-      stateProxy.winningCombination = ["a3", "b2", "c1"];
-    } else {
+    const board = gameboardModule.getBoard();
+    // loop through gameboardModule.gameboard array
+    // determine if a winning condition has been met
+    const winConditions = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    //
+    const weHavaWinner = winConditions.some((win) =>
+      // check if the board at that index matches the player's mark
+      win.every((condition) => board[condition] === player.mark),
+    );
+    if (!weHavaWinner) {
       stateProxy.winner = null;
       stateProxy.winningCombination = null;
     }
-    return state.winner;
+    return (state.winner, weHavaWinner);
   };
+
   // tracks active player
   const endTurn = () => {
     // gets values from gameboardModule.gameboard array
@@ -499,10 +516,14 @@ const eventsModule = (() => {
     // hide reset players button
     changePlayersButton.style.display = "none";
 
-    // Clears board UI
+    // Clears gameboard UI
+    //  target cells
     const cells = document.querySelectorAll(".cell");
+    //  targets each cell
     cells.forEach((cell) => {
+      // clear cell text content
       cell.textContent = "";
+      // remove cell class
       cell.classList.remove("winning-cell");
     });
 
