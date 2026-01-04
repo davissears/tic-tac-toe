@@ -462,27 +462,41 @@ const eventsModule = (() => {
     });
 
     // Reset player indicators
+    //  targets containers for players indicator messages
     const p1Indicator = document.querySelector(".p1Indicator");
     const p2Indicator = document.querySelector(".p2Indicator");
+    //  clear text content from player indicator message
     if (p1Indicator) p1Indicator.innerHTML = "";
     if (p2Indicator) p2Indicator.innerHTML = "";
 
+    //  targets containers for players indicator messages
     const p1Display = document.getElementById("playerOneNameDisplay");
     const p2Display = document.getElementById("playerTwoNameDisplay");
+    // toggle p1 display to active
     if (p1Display) p1Display.classList.add("active"); // Player 1 starts
+    // toggle p2 display to inactive
     if (p2Display) p2Display.classList.remove("active");
 
+    // update statusText
     statusText.textContent = `${playersModule.getPlayer1().name}'s Turn`;
 
+    // create turn indicator
     const turnIndicator = document.createElement("p");
+    // specifies text content for turn indicator
     turnIndicator.textContent = "place your mark";
+    // append turn indicator
     p1Indicator.appendChild(turnIndicator);
   });
 
+  // change players button behavior
   changePlayersButton.addEventListener("click", () => {
+    // call `resetGame()`
     gamestateModule.resetGame();
+    // call `resetPlayers()`
     playersModule.resetPlayers();
+    // hide reset button
     resetButton.style.display = "none";
+    // hide reset players button
     changePlayersButton.style.display = "none";
 
     // Clears board UI
@@ -507,8 +521,9 @@ const eventsModule = (() => {
     document.getElementById("playerOneString").value = "";
     document.getElementById("playerTwoString").value = "";
 
-    // Hide Status, Show Add Players
+    // hide game status container
     gameStatusDisplay.style.display = "none";
+    // reveal add players button
     addPlayers.style.display = "block";
   });
 })();
