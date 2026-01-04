@@ -1,3 +1,4 @@
+// TODO: Review codebase & update comment w/pseudo code
 // gameboard module
 let gameboardModule = (() => {
   const gameboard = ["", "", "", "", "", "", "", "", ""];
@@ -125,76 +126,8 @@ const gamestateModule = (() => {
     }
   };
 
-  // checks gameboard object for winning conditions
-  // & updates state object if a winner is determined
-  // const isWinning = (player) => {
-  //   if (
-  //     board().a1 === player.mark &&
-  //     board().a2 === player.mark &&
-  //     board().a3 === player.mark
-  //   ) {
-  //     stateProxy.winner = player;
-  //     stateProxy.winningCombination = ["a1", "a2", "a3"];
-  //   } else if (
-  //     board().b1 === player.mark &&
-  //     board().b2 === player.mark &&
-  //     board().b3 === player.mark
-  //   ) {
-  //     stateProxy.winner = player;
-  //     stateProxy.winningCombination = ["b1", "b2", "b3"];
-  //   } else if (
-  //     board().c1 === player.mark &&
-  //     board().c2 === player.mark &&
-  //     board().c3 === player.mark
-  //   ) {
-  //     stateProxy.winner = player;
-  //     stateProxy.winningCombination = ["c1", "c2", "c3"];
-  //   } else if (
-  //     board().a1 === player.mark &&
-  //     board().b1 === player.mark &&
-  //     board().c1 === player.mark
-  //   ) {
-  //     stateProxy.winner = player;
-  //     stateProxy.winningCombination = ["a1", "b1", "c1"];
-  //   } else if (
-  //     board().a2 === player.mark &&
-  //     board().b2 === player.mark &&
-  //     board().c2 === player.mark
-  //   ) {
-  //     stateProxy.winner = player;
-  //     stateProxy.winningCombination = ["a2", "b2", "c2"];
-  //   } else if (
-  //     board().a3 === player.mark &&
-  //     board().b3 === player.mark &&
-  //     board().c3 === player.mark
-  //   ) {
-  //     stateProxy.winner = player;
-  //     stateProxy.winningCombination = ["a3", "b3", "c3"];
-  //   } else if (
-  //     board().a1 === player.mark &&
-  //     board().b2 === player.mark &&
-  //     board().c3 === player.mark
-  //   ) {
-  //     stateProxy.winner = player;
-  //     stateProxy.winningCombination = ["a1", "b2", "c3"];
-  //   } else if (
-  //     board().a3 === player.mark &&
-  //     board().b2 === player.mark &&
-  //     board().c1 === player.mark
-  //   ) {
-  //     stateProxy.winner = player;
-  //     stateProxy.winningCombination = ["a3", "b2", "c1"];
-  //   } else {
-  //     stateProxy.winner = null;
-  //     stateProxy.winningCombination = null;
-  //   }
-  //   return state.winner;
-  // };
-
   const isWinning = (player) => {
     const board = gameboardModule.getBoard();
-    // loop through gameboardModule.gameboard array
-    // determine if a winning condition has been met
     const winConditions = [
       [0, 1, 2],
       [3, 4, 5],
@@ -205,16 +138,19 @@ const gamestateModule = (() => {
       [0, 4, 8],
       [2, 4, 6],
     ];
-    //
-    const weHavaWinner = winConditions.some((win) =>
-      // check if the board at that index matches the player's mark
-      win.every((condition) => board[condition] === player.mark),
+
+    const winningCombo = winConditions.find((win) =>
+      win.every((index) => board[index] === player.mark),
     );
-    if (!weHavaWinner) {
+
+    if (winningCombo) {
+      stateProxy.winner = player;
+      stateProxy.winningCombination = winningCombo;
+    } else {
       stateProxy.winner = null;
       stateProxy.winningCombination = null;
     }
-    return (state.winner, weHavaWinner);
+    return state.winner;
   };
 
   // tracks active player
@@ -380,7 +316,10 @@ const eventsModule = (() => {
       const currentPlayer = state.currentPlayer;
       if (currentPlayer) {
         // call placeMark
-        gamestateModule.placeMark(currentPlayer, event.target.id);
+        gamestateModule.placeMark(
+          currentPlayer,
+          parseInt(event.target.dataset.cellIndex),
+        );
         // check for win
         gamestateModule.isWinning(currentPlayer);
         // end turn
@@ -392,10 +331,10 @@ const eventsModule = (() => {
       // properties to corelating cell
       //
       const board = gameboardModule.getBoard();
-      Object.entries(board).forEach(([key, value]) => {
-        const cell = document.getElementById(key);
+      board.forEach((mark, index) => {
+        const cell = document.querySelector(`[data-cell-index="${index}"]`);
         if (cell) {
-          cell.textContent = value;
+          cell.textContent = mark;
         }
       });
     }
@@ -446,8 +385,10 @@ const eventsModule = (() => {
     // if winningCombination exists
     if (winningCombination) {
       // loop through winningCombination array
-      winningCombination.forEach((cellId) => {
-        const cellElement = document.getElementById(cellId);
+      winningCombination.forEach((index) => {
+        const cellElement = document.querySelector(
+          `[data-cell-index="${index}"]`,
+        );
         // if cellElement exists
         if (cellElement) {
           // add winning-cell class to cellElement
@@ -468,7 +409,6 @@ const eventsModule = (() => {
     resetButton.style.display = "none";
     changePlayersButton.style.display = "none";
 
-    // TODO: resume code review here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // Clear gameboard cell content
     const cells = document.querySelectorAll(".cell");
     cells.forEach((cell) => {
