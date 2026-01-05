@@ -1,26 +1,48 @@
-// TODO: Review codebase & update comment w/pseudo code
+// TODO: style UI
+// FIX: player display turn indicator.
+// 1. should append below player name
+// 2. stylize containers
+// FIX: color palette
+// 1.pick colors and declare as custon CSS variables
+// 2.refactors CSS rules to integrate
+// 3.players should have a designated color
+//  ex: player1 markers are blue, player1 name text is blue, etc.
+//
+// FIX: player Mark elements
+// 1.render as SVG
+// 2.style to match player color palette
+//
+// FIX: style gameboard
+// 1. use `squircles`, because they're cool
+// 2. round corners
+// 3. animate when player places mark
+//
+// FIX: add score tally representing games won for each player
 // gameboard module
-let gameboardModule = (() => {
+//  tracks, updates and resets board state
+const gameboardModule = (() => {
   const gameboard = ["", "", "", "", "", "", "", "", ""];
 
   // methods
   const getBoard = () => gameboard;
 
-  function updateBoard(spot, mark) {
+  const updateBoard = (spot, mark) => {
     gameboard[spot] = mark;
     return true;
-  }
+  };
 
-  function resetBoard() {
+  // resets each value of gameboard array
+  const resetBoard = () => {
     Object.keys(gameboard).forEach((key) => {
       gameboard[key] = "";
     });
-  }
+  };
 
   return { getBoard, updateBoard, gameboard, resetBoard };
 })();
 
 // players module
+//  tracks, updates and resets player state
 const playersModule = (() => {
   let playerCount = 0;
   const players = [];
@@ -58,6 +80,8 @@ const playersModule = (() => {
 })();
 
 // gamestate Module
+//  tracks gamestate and dispatches updates to state
+//  exposes methods for advancing game flow
 const gamestateModule = (() => {
   // defines methods to reuse from `playersModule` and `gamestateModule`
   const player1 = () => playersModule.getPlayer1();
@@ -68,11 +92,14 @@ const gamestateModule = (() => {
   const state = {
     // player trun
     currentPlayer: null,
+
     // used to determine a tie endgame condition &
     // player turn tracking support
     placedMarks: 0,
+
     // updated & checked by `isWinning()` & `gameOver()`
     winner: null,
+
     // stores winning condition
     // `isWinning()1` updates value if win condition is met
     // 'eventsModule` checks for event delegation
@@ -96,7 +123,8 @@ const gamestateModule = (() => {
     },
   });
 
-  // accepts player and gameboard position to place the players mark
+  // accepts player and gameboard position to place
+  // the players mark
   const placeMark = (player, spot) => {
     const mark = player.mark;
     const updateBoard = gameboardModule.updateBoard(spot, mark);
@@ -126,8 +154,11 @@ const gamestateModule = (() => {
     }
   };
 
+  // checks if wincon has been met
   const isWinning = (player) => {
     const board = gameboardModule.getBoard();
+
+    // array of win-cons
     const winConditions = [
       [0, 1, 2],
       [3, 4, 5],
@@ -139,13 +170,19 @@ const gamestateModule = (() => {
       [2, 4, 6],
     ];
 
+    //
     const winningCombo = winConditions.find((win) =>
+      // .every() returns true if all elements in array pass test
+      // test: do the index's of gameboard have the same mark
+      // at the index's in winConditions array
       win.every((index) => board[index] === player.mark),
     );
 
+    // if: win-con is met update state
     if (winningCombo) {
       stateProxy.winner = player;
       stateProxy.winningCombination = winningCombo;
+      // else: state = null
     } else {
       stateProxy.winner = null;
       stateProxy.winningCombination = null;
@@ -183,6 +220,7 @@ const gamestateModule = (() => {
     stateProxy.placedMarks = 0;
     stateProxy.winner = null;
 
+    // throws error if no players found
     if (!state.currentPlayer) {
       throw new Error(
         "No players found. Please create players before starting the game.",
@@ -306,18 +344,22 @@ const eventsModule = (() => {
 
   // event listener to call 'placeMark'
   document.addEventListener("click", (event) => {
+    // if: gameboard cell is clicked
     if (event.target.classList.contains("cell")) {
       const state = gamestateModule.state;
-      // Check if game is already over
+      // Check if game is already over OR game is a tie
       if (state.winner || state.placedMarks === 9) {
         return;
       }
 
+      // gets currentPlayer
       const currentPlayer = state.currentPlayer;
       if (currentPlayer) {
-        // call placeMark
+        // call `placeMark()`
         gamestateModule.placeMark(
           currentPlayer,
+          // converts clicked gameboard cell dataset value
+          // from string to intiger
           parseInt(event.target.dataset.cellIndex),
         );
         // check for win
@@ -329,7 +371,6 @@ const eventsModule = (() => {
       }
       // populate text from 'gameboardModule.gameboard'
       // properties to corelating cell
-      //
       const board = gameboardModule.getBoard();
       board.forEach((mark, index) => {
         const cell = document.querySelector(`[data-cell-index="${index}"]`);
